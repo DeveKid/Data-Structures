@@ -1,138 +1,286 @@
-// C++ program for addition of two polynomials 
-// using Linked Lists 
-#include<bits/stdc++.h> 
-using namespace std; 
+#include<bits/stdc++.h>
+using namespace std;
+typedef struct node
+{
+    int coe;
+    int man;
+    struct node *next;
+}NODE;
+typedef struct poly
+{
+    NODE *st;
+}POLY;
+void init(POLY *t)
+{
+    t->st=NULL;
+}
+NODE *createNode(int c,int m)
+{
+    NODE *a=(NODE*)malloc(sizeof(NODE));
+    a->coe=c;
+    a->man=m;
+    a->next=NULL;
+    return a;
+}
+void display(POLY *t)
+{
+    NODE *a=t->st;
+    if(a==NULL)
+    {
+        printf("\nEmpty LIST\n");
+        return;
+    }
+    printf("LIST : \n");
+    while(a!=NULL)
+    {
+        if(a->coe>0)
+            printf(" + ");
+        printf("%dx%d",a->coe,a->man);
+        a=a->next;
+    }
+}
+void createList(POLY *t)
+{
+    int c,m;
+    NODE *a=t->st,*b;
+    while(t->st!=NULL)
+    {
+        t->st=a->next;
+        free(a);
+        a=t->st;
+    }
+    while(1)
+    {
+        printf("\n COE MAN : ");
+        scanf("%d%d",&c,&m);
+        if(c==0 && m==0)
+            break;
+        if(c==0)
+            continue;
+        if(t->st==NULL)
+        {
+            t->st=a=createNode(c,m);
+        }
+        else
+        {
+            if(m>=b->man)
+            {
+                printf("\nInvalid");
+                continue;
+            }
+            a=createNode(c,m);
+            b->next=a;
+        }
+        b=a;
+    }
+}
+void sort(POLY *t)
+{
+    NODE *a=t->st,*b,*c;
+    int co,ma;
+    while(a->next!=NULL)
+    {
+        b=a;
+        c=a->next;
+        while(c!=NULL)
+        {
+            if(c->man > b->man)
+                b=c;
+            c=c->next;
+        }
+        if(a!=b)
+        {
+            co=a->coe;
+            a->coe=b->coe;
+            b->coe=co;
+            ma=a->man;
+            a->man=b->man;
+            b->man=ma;
+        }
+        a=a->next;
+    }
+}
+void delAll(POLY *t)
+{
+    NODE *a=t->st;
+    while(t->st!=NULL)
+    {
+        t->st=a->next;
+        free(a);
+        a=t->st;
+    }
+}
+void Add(POLY *r,POLY *p,POLY *q)
+{
+    NODE *a=p->st,*b=q->st,*c,*d;
+    int co,ma;
+    delAll(r);
+    while(a!=NULL && b!=NULL)
+    {
+        if(a->man==b->man)
+        {
+            co=a->coe+b->coe;
+            ma=a->man;
+            a=a->next;
+            b=b->next;
+        }
+        else if(a->man > b->man)
+        {
+            co=a->coe;
+            ma=a->man;
+            a=a->next;
+        }
+        else
+        {
+            co=b->coe;
+            ma=b->man;
+            b=b->next;
+        }
+        if(r->st==NULL)
+            r->st=c=createNode(co,ma);
+        else
+        {
+            c=createNode(co,ma);
+            d->next=c;
+        }
+        d=c;
+    }
+    while(a!=NULL)
+    {
+        c=createNode(a->coe,a->man);
+        d->next=c;
+        d=c;
+    }
+    while(b!=NULL)
+    {
+        c=createNode(b->coe,b->man);
+        d->next=c;
+        d=c;
+    }
+}
 
-// Node structure containing power and coefficient of variable 
-struct Node 
-{ 
-	int coeff; 
-	int pow; 
-	struct Node *next; 
-}; 
-			
-// Function to create new node 
-void create_node(int x, int y, struct Node **temp) 
-{ 
-	struct Node *r, *z; 
-	z = *temp; 
-	if(z == NULL) 
-	{ 
-		r =(struct Node*)malloc(sizeof(struct Node)); 
-		r->coeff = x; 
-		r->pow = y; 
-		*temp = r; 
-		r->next = (struct Node*)malloc(sizeof(struct Node)); 
-		r = r->next; 
-		r->next = NULL; 
-	} 
-	else
-	{ 
-		r->coeff = x; 
-		r->pow = y; 
-		r->next = (struct Node*)malloc(sizeof(struct Node)); 
-		r = r->next; 
-		r->next = NULL; 
-	} 
-} 
+void Subtract(POLY *r,POLY *p,POLY *q)
+{
+    NODE *a=p->st,*b=q->st,*c,*d;
+    int co,ma;
+    delAll(r);
+    while(a!=NULL && b!=NULL)
+    {
+        if(a->man==b->man)
+        {
+            co=a->coe-b->coe;
+            ma=a->man;
+            a=a->next;
+            b=b->next;
+        }
+        else if(a->man > b->man)
+        {
+            co=a->coe;
+            ma=a->man;
+            a=a->next;
+        }
+        else
+        {
+            co=-b->coe;
+            ma=b->man;
+            b=b->next;
+        }
+        if(r->st==NULL)
+            r->st=c=createNode(co,ma);
+        else
+        {
+            c=createNode(co,ma);
+            d->next=c;
+        }
+        d=c;
+    }
+    while(a!=NULL)
+    {
+        c=createNode(a->coe,a->man);
+        d->next=c;
+        d=c;
+    }
+    while(b!=NULL)
+    {
+        c=createNode(-b->coe,b->man);
+        d->next=c;
+        d=c;
+    }
+}
 
-// Function Adding two polynomial numbers 
-void polyadd(struct Node *poly1, struct Node *poly2, struct Node *poly) 
-{ 
-while(poly1->next && poly2->next) 
-	{ 
-		// If power of 1st polynomial is greater then 2nd, then store 1st as it is 
-		// and move its pointer 
-		if(poly1->pow > poly2->pow) 
-		{ 
-			poly->pow = poly1->pow; 
-			poly->coeff = poly1->coeff; 
-			poly1 = poly1->next; 
-		} 
-		
-		// If power of 2nd polynomial is greater then 1st, then store 2nd as it is 
-		// and move its pointer 
-		else if(poly1->pow < poly2->pow) 
-		{ 
-			poly->pow = poly2->pow; 
-			poly->coeff = poly2->coeff; 
-			poly2 = poly2->next; 
-		} 
-		
-		// If power of both polynomial numbers is same then add their coefficients 
-		else
-		{ 
-			poly->pow = poly1->pow; 
-			poly->coeff = poly1->coeff+poly2->coeff; 
-			poly1 = poly1->next; 
-			poly2 = poly2->next; 
-		} 
-		
-		// Dynamically create new node 
-		poly->next = (struct Node *)malloc(sizeof(struct Node)); 
-		poly = poly->next; 
-		poly->next = NULL; 
-	} 
-while(poly1->next || poly2->next) 
-	{ 
-		if(poly1->next) 
-		{ 
-			poly->pow = poly1->pow; 
-			poly->coeff = poly1->coeff; 
-			poly1 = poly1->next; 
-		} 
-		if(poly2->next) 
-		{ 
-			poly->pow = poly2->pow; 
-			poly->coeff = poly2->coeff; 
-			poly2 = poly2->next; 
-		} 
-		poly->next = (struct Node *)malloc(sizeof(struct Node)); 
-		poly = poly->next; 
-		poly->next = NULL; 
-	} 
-} 
+void multiply(POLY *r,POLY *p,POLY *q)
+{
+    NODE *a=p->st,*b=q->st,*c,*d;
+    delAll(r);
+    int co,ma;
+    while(b!=NULL)
+    {
+        a=p->st;
+        while(a!=NULL)
+        {
+            co=a->coe*b->coe;
+            ma=a->man+b->man;
+            if(r->st==NULL)
+                r->st=c=createNode(co,ma);
+            else
+            {
+                c=createNode(co,ma);
+                d->next=c;
+            }
+            d=c;
+            a=a->next;
+        }
+        b=b->next;
 
-// Display Linked list 
-void show(struct Node *node) 
-{ 
-while(node->next != NULL) 
-	{ 
-	printf("%dx^%d", node->coeff, node->pow); 
-	node = node->next; 
-	if(node->next != NULL) 
-		printf(" + "); 
-	} 
-} 
-
-// Driver program 
-int main() 
-{ 
-	struct Node *poly1 = NULL, *poly2 = NULL, *poly = NULL; 
-	
-	// Create first list of 5x^2 + 4x^1 + 2x^0 
-	create_node(5,2,&poly1); 
-	create_node(4,1,&poly1); 
-	create_node(2,0,&poly1); 
-	
-	// Create second list of 5x^1 + 5x^0 
-	create_node(5,1,&poly2); 
-	create_node(5,0,&poly2); 
-	
-	printf("1st Number: "); 
-	show(poly1); 
-	
-	printf("\n2nd Number: "); 
-	show(poly2); 
-	
-	poly = (struct Node *)malloc(sizeof(struct Node)); 
-	
-	// Function add two polynomial numbers 
-	polyadd(poly1, poly2, poly); 
-	
-	// Display resultant List 
-	printf("\nAdded polynomial: "); 
-	show(poly); 
-
-return 0; 
-} 
+        sort(r);
+        a=r->st;
+        NODE  *b;
+        while(a->next!=NULL)
+        {
+            int co=a->coe;
+            b=a->next;
+            if(a->man==b->man)
+            {
+                co+=b->coe;
+                a->next=b->next;
+                free(b);
+            }
+            a->coe=co;
+            a=a->next;
+        }
+    }
+}
+int main()
+{
+    int opt;
+    POLY a,b,c;
+    init((&a));
+    init (&b);
+    init((&c));
+    while(1)
+    {
+        printf("\n1.CreateList 1\n2.CreateList 2\n3.display 1\n4.display  2\n5.display 3\n6.add\n7.subtract\n8.multiply\nOption :\n");
+        scanf("%d",&opt);
+        if(opt>8)
+            break;
+        switch (opt) {
+            case 1:
+                createList(&a);break;
+            case 2:
+                createList(&b);break;
+            case 3:
+                display(&a);break;
+            case 4:
+                display(&b);break;
+            case 5:
+                display(&c);break;
+            case 6:
+                Add(&c,&a,&b);break;
+            case 7:
+                Subtract(&c,&a,&b);break;
+            case 8:
+                multiply(&c,&a,&b);
+        }
+    }
+    return 0;
+}
